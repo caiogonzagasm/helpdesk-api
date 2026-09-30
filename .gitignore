@@ -1,0 +1,4 @@
+node_modules/
+helpdesk.db
+helpdesk.db-*
+*.log

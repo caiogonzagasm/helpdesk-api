@@ -4,6 +4,7 @@ const port = 3000;
 const db = require('./database');
 
 app.use(express.json());
+app.use(express.static(require('node:path').join(__dirname, '..', 'public')));
 
 const statusPermitidos = ['Aberto', 'Em andamento', 'Fechado'];
 const prioridadesPermitidas = ['Baixa', 'Média', 'Alta'];
@@ -110,7 +111,15 @@ app.delete('/chamados/:id', (req, res) => {
         return res.status(404).json({ error: 'Chamado não encontrado' });
     }
 
-    db.prepare('DELETE FROM chamados WHERE id = ?').run(id);
+    db.exec('BEGIN');
+    try {
+        db.prepare('DELETE FROM mensagens WHERE chamado_id = ?').run(id);
+        db.prepare('DELETE FROM chamados WHERE id = ?').run(id);
+        db.exec('COMMIT');
+    } catch (error) {
+        db.exec('ROLLBACK');
+        throw error;
+    }
     res.status(204).send();
 
 });
@@ -148,10 +157,13 @@ app.get('/chamados/:id/mensagens', (req, res) => {
     res.json(mensagens);
 });
 
-app.listen(port, () => {
-  console.log(`HelpDesk API online na porta ${port}`);
-  
-});
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`HelpDesk API online na porta ${port}`);
+    });
+}
+
+module.exports = app;
 
 
 

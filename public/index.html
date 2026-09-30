@@ -1,55 +1,650 @@
 <!doctype html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ffffff">
+
   <title>Help Desk - Chamados</title>
+
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/styles.css">
+
   <script src="/app.js" defer></script>
 </head>
+
 <body>
-  <a class="skip-link" href="#main">Pular para o conteúdo</a>
+
+  <a class="skip-link" href="#main">
+    Pular para o conteúdo
+  </a>
+
   <div class="app-shell">
-    <header class="topbar"><div class="header-inner"><a class="brand" href="/">Help Desk</a><span class="connection" id="connection">Conectando</span></div></header>
+
+    <!-- Cabeçalho -->
+    <header class="topbar">
+      <div class="header-inner">
+
+        <a class="brand" href="/">
+          Help Desk
+        </a>
+
+        <span class="connection" id="connection">
+          Conectando
+        </span>
+
+      </div>
+    </header>
+
+
+    <!-- Conteúdo principal -->
     <main id="main">
-      <div class="page-heading"><div><h1>Chamados</h1><p class="subtitle">Consulte e acompanhe as solicitações de atendimento.</p></div><button class="button primary" id="new-ticket">Novo chamado</button></div>
-      <section class="stats" aria-label="Resumo de todos os chamados">
-        <div class="stat"><span>Total</span><strong id="total-count">—</strong></div>
-        <div class="stat"><span>Abertos</span><strong id="open-count">—</strong></div>
-        <div class="stat"><span>Em andamento</span><strong id="progress-count">—</strong></div>
-        <div class="stat"><span>Fechados</span><strong id="closed-count">—</strong></div>
+
+      <!-- Título da página -->
+      <div class="page-heading">
+
+        <div>
+          <h1>Chamados</h1>
+
+          <p class="subtitle">
+            Consulte e acompanhe as solicitações de atendimento.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="button primary"
+          id="new-ticket"
+        >
+          Novo chamado
+        </button>
+
+      </div>
+
+
+      <!-- Resumo -->
+      <section
+        class="stats"
+        aria-label="Resumo de todos os chamados"
+      >
+
+        <div class="stat">
+          <span>Total</span>
+          <strong id="total-count">—</strong>
+        </div>
+
+        <div class="stat">
+          <span>Abertos</span>
+          <strong id="open-count">—</strong>
+        </div>
+
+        <div class="stat">
+          <span>Em andamento</span>
+          <strong id="progress-count">—</strong>
+        </div>
+
+        <div class="stat">
+          <span>Fechados</span>
+          <strong id="closed-count">—</strong>
+        </div>
+
       </section>
-      <section class="ticket-card" aria-labelledby="list-title">
-        <div class="list-heading"><h2 id="list-title">Lista de chamados <span id="result-count" class="count-pill">0</span></h2><button class="button secondary compact" id="refresh" aria-label="Atualizar chamados">Atualizar</button></div>
-        <div class="filters"><label class="search">Buscar<input id="search" type="search" placeholder="Título, descrição ou número" aria-label="Buscar chamados"></label><label class="filter-label"><span>Status</span><select id="filter-status"><option value="">Todos os status</option><option>Aberto</option><option>Em andamento</option><option>Fechado</option></select></label><label class="filter-label"><span>Prioridade</span><select id="filter-priority"><option value="">Todas as prioridades</option><option>Baixa</option><option>Média</option><option>Alta</option></select></label><button class="text-button" id="clear-filters" hidden>Limpar</button></div>
-        <div id="list-error" class="error-box" role="alert" hidden></div>
-        <div id="list-loading" class="empty-state" role="status"><h3>Carregando chamados...</h3></div>
-        <div class="table-wrap" id="table-wrap" hidden><table><thead><tr><th>Chamado</th><th>Status</th><th>Prioridade</th><th>Criado em</th></tr></thead><tbody id="ticket-list"></tbody></table></div>
-        <div class="empty-state" id="empty-state" hidden><h3 id="empty-title">Nenhum chamado cadastrado</h3><p id="empty-description">Use Novo chamado para registrar uma solicitação.</p><button class="button secondary" id="empty-action">Novo chamado</button></div>
-        <footer class="list-footer"><span id="list-summary" role="status">Consultando chamados</span></footer>
+
+
+      <!-- Lista de chamados -->
+      <section
+        class="ticket-card"
+        aria-labelledby="list-title"
+      >
+
+        <div class="list-heading">
+
+          <h2 id="list-title">
+            Lista de chamados
+
+            <span
+              id="result-count"
+              class="count-pill"
+            >
+              0
+            </span>
+          </h2>
+
+          <button
+            type="button"
+            class="button secondary compact"
+            id="refresh"
+            aria-label="Atualizar chamados"
+          >
+            Atualizar
+          </button>
+
+        </div>
+
+
+        <!-- Filtros -->
+        <div class="filters">
+
+          <label class="search">
+            Buscar
+
+            <input
+              id="search"
+              type="search"
+              placeholder="Título, descrição ou número"
+              aria-label="Buscar chamados"
+            >
+          </label>
+
+
+          <label class="filter-label">
+
+            <span>Status</span>
+
+            <select id="filter-status">
+              <option value="">Todos os status</option>
+              <option>Aberto</option>
+              <option>Em andamento</option>
+              <option>Fechado</option>
+            </select>
+
+          </label>
+
+
+          <label class="filter-label">
+
+            <span>Prioridade</span>
+
+            <select id="filter-priority">
+              <option value="">Todas as prioridades</option>
+              <option>Baixa</option>
+              <option>Média</option>
+              <option>Alta</option>
+            </select>
+
+          </label>
+
+
+          <button
+            type="button"
+            class="text-button"
+            id="clear-filters"
+            hidden
+          >
+            Limpar
+          </button>
+
+        </div>
+
+
+        <!-- Erro -->
+        <div
+          id="list-error"
+          class="error-box"
+          role="alert"
+          hidden
+        ></div>
+
+
+        <!-- Carregamento -->
+        <div
+          id="list-loading"
+          class="empty-state"
+          role="status"
+        >
+          <h3>Carregando chamados...</h3>
+        </div>
+
+
+        <!-- Tabela -->
+        <div
+          class="table-wrap"
+          id="table-wrap"
+          hidden
+        >
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>Chamado</th>
+                <th>Status</th>
+                <th>Prioridade</th>
+                <th>Criado em</th>
+              </tr>
+            </thead>
+
+            <tbody id="ticket-list"></tbody>
+
+          </table>
+
+        </div>
+
+
+        <!-- Estado vazio -->
+        <div
+          class="empty-state"
+          id="empty-state"
+          hidden
+        >
+
+          <h3 id="empty-title">
+            Nenhum chamado cadastrado
+          </h3>
+
+          <p id="empty-description">
+            Use Novo chamado para registrar uma solicitação.
+          </p>
+
+          <button
+            type="button"
+            class="button secondary"
+            id="empty-action"
+          >
+            Novo chamado
+          </button>
+
+        </div>
+
+
+        <footer class="list-footer">
+
+          <span
+            id="list-summary"
+            role="status"
+          >
+            Consultando chamados
+          </span>
+
+        </footer>
+
       </section>
+
     </main>
   </div>
-  <dialog id="create-dialog" aria-labelledby="create-title" class="modal">
-    <div class="dialog-heading"><h2 id="create-title">Novo chamado</h2><button class="button secondary compact" data-close="create-dialog" aria-label="Fechar criação">Fechar</button></div>
-    <p class="dialog-intro">Preencha os dados da solicitação.</p>
-    <form id="create-form"><label>Título <input name="titulo" required maxlength="200" placeholder="Ex.: Não consigo acessar minha conta" autocomplete="off"></label><label>Descrição <textarea name="descricao" required rows="5" maxlength="10000" placeholder="Descreva a situação e o que você precisa…"></textarea></label><label>Prioridade <select name="prioridade"><option>Baixa</option><option selected>Média</option><option>Alta</option></select></label><p class="field-hint">O chamado será criado com o status Aberto.</p><p class="error-box" id="create-error" role="alert" hidden></p><div class="form-actions"><button type="button" class="button secondary" data-close="create-dialog">Cancelar</button><button type="submit" class="button primary">Criar chamado</button></div></form>
-  </dialog>
-  <dialog id="detail-dialog" class="detail-dialog" aria-labelledby="detail-title">
-    <div class="detail-top"><span id="detail-number" class="eyebrow">Detalhes do chamado</span><button class="button secondary compact" data-close="detail-dialog" aria-label="Fechar detalhes">Fechar</button></div>
-    <div id="detail-loading" class="empty-state" role="status">Carregando detalhes…</div><p class="error-box" id="detail-load-error" role="alert" hidden></p>
-    <div id="detail-content" hidden>
-      <div class="detail-heading"><div class="badges" id="detail-badges"></div><h2 id="detail-title">Detalhes do chamado</h2><p class="muted" id="detail-date"></p></div>
-      <div class="detail-controls"><label>Status do chamado<select id="detail-status"><option>Aberto</option><option>Em andamento</option><option>Fechado</option></select></label><button class="button secondary" id="reply-button">Responder</button><button class="button danger-text" id="delete-ticket" aria-label="Excluir chamado">Excluir</button></div>
-      <p id="detail-action-error" class="error-box" role="alert" hidden></p>
-      <section class="description-block"><h3>Descrição</h3><p id="detail-description"></p></section>
-      <section class="conversation" aria-labelledby="conversation-title"><div class="conversation-heading"><h3 id="conversation-title">Conversa <span id="message-count" class="count-pill">0</span></h3><span>Histórico do atendimento</span></div><div id="messages" class="messages" role="log" aria-label="Histórico de mensagens" aria-live="polite"></div></section>
-      <form id="message-form" class="composer"><label>Seu nome<input id="message-author" name="autor" required maxlength="100" autocomplete="name"></label><label>Sua resposta<textarea id="message-text" name="mensagem" required rows="3" maxlength="10000" placeholder="Escreva sua mensagem"></textarea></label><p class="error-box" id="message-error" role="alert" hidden></p><div class="composer-bottom"><button class="button primary" type="submit">Enviar mensagem</button></div></form>
+
+
+  <!-- Modal: criar chamado -->
+  <dialog
+    id="create-dialog"
+    class="modal"
+    aria-labelledby="create-title"
+  >
+
+    <div class="dialog-heading">
+
+      <h2 id="create-title">
+        Novo chamado
+      </h2>
+
+      <button
+        type="button"
+        class="button secondary compact"
+        data-close="create-dialog"
+        aria-label="Fechar criação"
+      >
+        Fechar
+      </button>
+
     </div>
+
+
+    <p class="dialog-intro">
+      Preencha os dados da solicitação.
+    </p>
+
+
+    <form id="create-form">
+
+      <label>
+        Título
+
+        <input
+          name="titulo"
+          required
+          maxlength="200"
+          placeholder="Ex.: Não consigo acessar minha conta"
+          autocomplete="off"
+        >
+      </label>
+
+
+      <label>
+        Descrição
+
+        <textarea
+          name="descricao"
+          required
+          rows="5"
+          maxlength="10000"
+          placeholder="Descreva a situação e o que você precisa…"
+        ></textarea>
+      </label>
+
+
+      <label>
+        Prioridade
+
+        <select name="prioridade">
+          <option>Baixa</option>
+          <option selected>Média</option>
+          <option>Alta</option>
+        </select>
+      </label>
+
+
+      <p class="field-hint">
+        O chamado será criado com o status Aberto.
+      </p>
+
+
+      <p
+        class="error-box"
+        id="create-error"
+        role="alert"
+        hidden
+      ></p>
+
+
+      <div class="form-actions">
+
+        <button
+          type="button"
+          class="button secondary"
+          data-close="create-dialog"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          class="button primary"
+        >
+          Criar chamado
+        </button>
+
+      </div>
+
+    </form>
+
   </dialog>
-  <dialog id="delete-dialog" class="modal small" aria-labelledby="delete-title"><h2 id="delete-title">Excluir este chamado?</h2><p id="delete-description">Ele deixará de aparecer na central. Esta ação não pode ser desfeita.</p><p class="error-box" id="delete-error" role="alert" hidden></p><div class="form-actions"><button class="button secondary" data-close="delete-dialog">Cancelar</button><button class="button danger" id="confirm-delete">Sim, excluir chamado</button></div></dialog>
-  <div id="toast" class="toast" role="status" hidden></div>
+
+
+  <!-- Modal: detalhes do chamado -->
+  <dialog
+    id="detail-dialog"
+    class="detail-dialog"
+    aria-labelledby="detail-title"
+  >
+
+    <div class="detail-top">
+
+      <span
+        id="detail-number"
+        class="eyebrow"
+      >
+        Detalhes do chamado
+      </span>
+
+      <button
+        type="button"
+        class="button secondary compact"
+        data-close="detail-dialog"
+        aria-label="Fechar detalhes"
+      >
+        Fechar
+      </button>
+
+    </div>
+
+
+    <div
+      id="detail-loading"
+      class="empty-state"
+      role="status"
+    >
+      Carregando detalhes…
+    </div>
+
+
+    <p
+      class="error-box"
+      id="detail-load-error"
+      role="alert"
+      hidden
+    ></p>
+
+
+    <div
+      id="detail-content"
+      hidden
+    >
+
+      <div class="detail-heading">
+
+        <div
+          class="badges"
+          id="detail-badges"
+        ></div>
+
+        <h2 id="detail-title">
+          Detalhes do chamado
+        </h2>
+
+        <p
+          class="muted"
+          id="detail-date"
+        ></p>
+
+      </div>
+
+
+      <!-- Controles do chamado -->
+      <div class="detail-controls">
+
+        <label>
+          Status do chamado
+
+          <select id="detail-status">
+            <option>Aberto</option>
+            <option>Em andamento</option>
+            <option>Fechado</option>
+          </select>
+        </label>
+
+
+        <button
+          type="button"
+          class="button secondary"
+          id="reply-button"
+        >
+          Responder
+        </button>
+
+
+        <button
+          type="button"
+          class="button danger-text"
+          id="delete-ticket"
+          aria-label="Excluir chamado"
+        >
+          Excluir
+        </button>
+
+      </div>
+
+
+      <p
+        id="detail-action-error"
+        class="error-box"
+        role="alert"
+        hidden
+      ></p>
+
+
+      <!-- Descrição -->
+      <section class="description-block">
+
+        <h3>Descrição</h3>
+
+        <p id="detail-description"></p>
+
+      </section>
+
+
+      <!-- Conversa -->
+      <section
+        class="conversation"
+        aria-labelledby="conversation-title"
+      >
+
+        <div class="conversation-heading">
+
+          <h3 id="conversation-title">
+            Conversa
+
+            <span
+              id="message-count"
+              class="count-pill"
+            >
+              0
+            </span>
+          </h3>
+
+          <span>
+            Histórico do atendimento
+          </span>
+
+        </div>
+
+
+        <div
+          id="messages"
+          class="messages"
+          role="log"
+          aria-label="Histórico de mensagens"
+          aria-live="polite"
+        ></div>
+
+      </section>
+
+
+      <!-- Responder -->
+      <form
+        id="message-form"
+        class="composer"
+      >
+
+        <label>
+          Seu nome
+
+          <input
+            id="message-author"
+            name="autor"
+            required
+            maxlength="100"
+            autocomplete="name"
+          >
+        </label>
+
+
+        <label>
+          Sua resposta
+
+          <textarea
+            id="message-text"
+            name="mensagem"
+            required
+            rows="3"
+            maxlength="10000"
+            placeholder="Escreva sua mensagem"
+          ></textarea>
+        </label>
+
+
+        <p
+          class="error-box"
+          id="message-error"
+          role="alert"
+          hidden
+        ></p>
+
+
+        <div class="composer-bottom">
+
+          <button
+            class="button primary"
+            type="submit"
+          >
+            Enviar mensagem
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </dialog>
+
+
+  <!-- Modal: excluir chamado -->
+  <dialog
+    id="delete-dialog"
+    class="modal small"
+    aria-labelledby="delete-title"
+  >
+
+    <h2 id="delete-title">
+      Excluir este chamado?
+    </h2>
+
+    <p id="delete-description">
+      Ele deixará de aparecer na central.
+      Esta ação não pode ser desfeita.
+    </p>
+
+
+    <p
+      class="error-box"
+      id="delete-error"
+      role="alert"
+      hidden
+    ></p>
+
+
+    <div class="form-actions">
+
+      <button
+        type="button"
+        class="button secondary"
+        data-close="delete-dialog"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="button danger"
+        id="confirm-delete"
+      >
+        Sim, excluir chamado
+      </button>
+
+    </div>
+
+  </dialog>
+
+
+  <!-- Toast -->
+  <div
+    id="toast"
+    class="toast"
+    role="status"
+    hidden
+  ></div>
+
 </body>
+
 </html>

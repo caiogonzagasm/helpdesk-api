@@ -7,15 +7,15 @@ um histórico de mensagens dentro de cada atendimento.
 
 ## Preview
 
-<img src="docs/images/dashboard.png" width="900" alt="Tela principal">
+<img src="docs/images/image.png" width="900" alt="Tela principal">
 
 ### Detalhes do chamado
 
-<img src="docs/images/detalhes-chamado.png" width="900" alt="Detalhes do chamado">
+<img src="docs/images/image2.png" width="900" alt="Detalhes do chamado">
 
 ### Conversa
 
-<img src="docs/images/conversa.png" width="900" alt="Sistema de mensagens">
+<img src="docs/images/image3.png" width="900" alt="Sistema de mensagens">
 
 ## Funcionalidades
 

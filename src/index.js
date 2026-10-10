@@ -2,6 +2,14 @@ const express = require('express');
 const app = express();
 const port = 3000;
 const db = require('./database');
+const bcryptjs = require('bcryptjs');
+const jsonwebtoken = require('jsonwebtoken');
+
+const path = require('path');
+require('dotenv').config({
+    path: path.resolve(__dirname, '../.env')
+});
+
 
 app.use(express.json());
 app.use(express.static(require('node:path').join(__dirname, '..', 'public')));
@@ -9,7 +17,24 @@ app.use(express.static(require('node:path').join(__dirname, '..', 'public')));
 const statusPermitidos = ['Aberto', 'Em andamento', 'Fechado'];
 const prioridadesPermitidas = ['Baixa', 'Média', 'Alta'];
 
-app.get('/chamados', (req, res) => {
+function autenticarToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if(!token) {
+        return res.status(401).json({ error: 'Token não fornecido' });
+    }
+
+    jsonwebtoken.verify(token, process.env.JWT_SECRET, (err, usuario) => {
+        if(err) {
+            return res.status(403).json({ error: 'Token inválido' });
+        }
+        req.usuario = usuario;
+        next();
+    });
+}
+
+app.get('/chamados', autenticarToken, (req, res) => { 
     
 const status = req.query.status;
 const prioridade = req.query.prioridade;
@@ -33,7 +58,7 @@ if(prioridade && !prioridadesPermitidas.includes(prioridade)) {
     res.json(listaChamados);
 });
 
-app.get('/chamados/:id', (req, res) => { 
+app.get('/chamados/:id', autenticarToken, (req, res) => { 
     const id = parseInt(req.params.id);
     const chamado = db.prepare('SELECT * FROM chamados WHERE id = ?').get(id);
     
@@ -44,7 +69,7 @@ app.get('/chamados/:id', (req, res) => {
     res.json(chamado);
 });
 
-app.patch('/chamados/:id', (req, res) => {
+app.patch('/chamados/:id', autenticarToken, (req, res) => {
     const id = parseInt(req.params.id);
     const chamado = db.prepare('SELECT * FROM chamados WHERE id = ?').get(id);
 
@@ -71,7 +96,7 @@ app.patch('/chamados/:id', (req, res) => {
 
 })
 
-app.post('/chamados', (req, res) => {
+app.post('/chamados', autenticarToken, (req, res) => {
     const { titulo, descricao, prioridade } = req.body;
 
     if(!titulo || !descricao) {
@@ -97,13 +122,13 @@ app.post('/chamados', (req, res) => {
 
     const resultado = db.prepare('SELECT * FROM chamados WHERE id = ?').get(db.prepare('SELECT last_insert_rowid() as id').get().id);
 
-    res.status(201).json(resultado);
+    res.status(201).json(resultado); 
 
 
 
 });
 
-app.delete('/chamados/:id', (req, res) => {
+app.delete('/chamados/:id', autenticarToken, (req, res) => {
     const id = parseInt(req.params.id);
     const chamado = db.prepare('SELECT * FROM chamados WHERE id = ?').get(id);
 
@@ -124,7 +149,7 @@ app.delete('/chamados/:id', (req, res) => {
 
 });
 
-app.post('/chamados/:id/mensagens', (req, res) => {
+app.post('/chamados/:id/mensagens', autenticarToken, (req, res) => {
     const id = parseInt(req.params.id);
     const chamado = db.prepare('SELECT * FROM chamados WHERE id = ?').get(id);
 
@@ -145,7 +170,7 @@ app.post('/chamados/:id/mensagens', (req, res) => {
 
 });
 
-app.get('/chamados/:id/mensagens', (req, res) => {
+app.get('/chamados/:id/mensagens', autenticarToken, (req, res) => {
     const id = parseInt(req.params.id);
     const chamado = db.prepare('SELECT * FROM chamados WHERE id = ?').get(id);
 
@@ -155,6 +180,64 @@ app.get('/chamados/:id/mensagens', (req, res) => {
 
     const mensagens = db.prepare('SELECT * FROM mensagens WHERE chamado_id = ? ORDER BY criado_em ASC').all(id);
     res.json(mensagens);
+});
+
+async function hashPassword(senha) {
+    const salt = await bcryptjs.genSalt(10);
+    const hashedPassword = await bcryptjs.hash(senha, salt);
+    return hashedPassword;
+}
+
+app.post('/usuarios', async (req, res) => {
+    const { nome, username, email, senha } = req.body;
+
+    if(!nome || !username || !email || !senha) {
+        return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+    }
+
+    const emailExistente = db.prepare('SELECT * FROM usuarios WHERE email = ?').get(email);
+    if(emailExistente) {
+        return res.status(400).json({ error: 'Email já cadastrado' });
+    }
+
+    const usernameExistente = db.prepare('SELECT * FROM usuarios WHERE username = ?').get(username);
+    if(usernameExistente) {
+        return res.status(400).json({ error: 'Username já cadastrado' });
+    }
+
+    const senhaHash = await hashPassword(senha);
+    
+    db.prepare('INSERT INTO usuarios (nome, username, email, senhaHash, criado_em) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)').run(nome, username, email, senhaHash);
+
+    const resultado = db.prepare('SELECT * FROM usuarios WHERE id = ?').get(db.prepare('SELECT last_insert_rowid() as id').get().id);
+    res.status(201).json(resultado);
+
+   
+});
+
+app.post('/login', async (req, res) => {
+    const { username, senha } = req.body;
+
+    if(!username || !senha) {
+        return res.status(400).json({ error: 'Username e senha são obrigatórios' });
+    }
+
+    const usuario = db.prepare('SELECT * FROM usuarios WHERE username = ?').get(username);
+
+    if(!usuario) {
+        return res.status(401).json({ error: 'Credenciais inválidas' });
+    }
+
+    const senhaValida = await bcryptjs.compare(senha, usuario.senha);
+
+    if(!senhaValida) {
+        return res.status(401).json({ error: 'Credenciais inválidas' });
+    }
+
+    const token = jsonwebtoken.sign({ id: usuario.id, username: usuario.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.json({ token });
+
+
 });
 
 if (require.main === module) {

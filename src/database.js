@@ -23,6 +23,19 @@ db.exec(`
 )
   `);
 
+  db.exec(`
+  CREATE TABLE IF NOT EXISTS usuarios (
+    id INTEGER PRIMARY KEY,
+    nome TEXT NOT NULL,
+    username TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE,
+    senha TEXT NOT NULL,
+    criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
+const colunasUsuarios = db.prepare("PRAGMA table_info(usuarios)").all();
+console.log(colunasUsuarios);
 
 const colunas = db.prepare("PRAGMA table_info(chamados)").all();
 const colunasEsperadas = ['id', 'titulo', 'descricao', 'prioridade', 'status', 'criado_em'];

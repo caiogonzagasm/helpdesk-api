@@ -38,6 +38,8 @@ app.get('/chamados', autenticarToken, (req, res) => {
     
 const status = req.query.status;
 const prioridade = req.query.prioridade;
+const usuarioId = req.usuario.id;
+let listaChamados;
 
 if(status && !statusPermitidos.includes(status)) {
     return res.status(400).json({ error: 'Status inválido' });
@@ -45,15 +47,21 @@ if(status && !statusPermitidos.includes(status)) {
 if(prioridade && !prioridadesPermitidas.includes(prioridade)) {
     return res.status(400).json({ error: 'Prioridade inválida' });
 }
-    let listaChamados;
 
-    if(status && prioridade) listaChamados = db.prepare('SELECT * FROM chamados WHERE status = ? AND prioridade = ?').all(status, prioridade);
+if(req.usuario.role === 'admin') {
+    listaChamados = db.prepare('SELECT * FROM chamados').all();
+}
 
-    else if(status) listaChamados = db.prepare('SELECT * FROM chamados WHERE status = ?').all(status);
+else {
+    listaChamados = db.prepare('SELECT * FROM chamados WHERE usuario_id = ?').all(usuarioId);
 
-    else if(prioridade) listaChamados = db.prepare('SELECT * FROM chamados WHERE prioridade = ?').all(prioridade);
+    if(status && prioridade) listaChamados = db.prepare('SELECT * FROM chamados WHERE status = ? AND prioridade = ? AND usuario_id = ?').all(status, prioridade, usuarioId);
 
-    else listaChamados = db.prepare('SELECT * FROM chamados').all();
+    else if(status) listaChamados = db.prepare('SELECT * FROM chamados WHERE status = ? AND usuario_id = ?').all(status, usuarioId);
+
+    else if(prioridade) listaChamados = db.prepare('SELECT * FROM chamados WHERE prioridade = ? AND usuario_id = ?').all(prioridade, usuarioId);
+
+    else listaChamados = db.prepare('SELECT * FROM chamados WHERE usuario_id = ?').all(usuarioId);
 
     res.json(listaChamados);
 });
@@ -98,6 +106,7 @@ app.patch('/chamados/:id', autenticarToken, (req, res) => {
 
 app.post('/chamados', autenticarToken, (req, res) => {
     const { titulo, descricao, prioridade } = req.body;
+    const usuarioId = req.usuario.id;
 
     if(!titulo || !descricao) {
         return res.status(400).json({ error: 'Título e descrição são obrigatórios' });
@@ -116,9 +125,9 @@ app.post('/chamados', autenticarToken, (req, res) => {
         return res.status(400).json({ error: 'Prioridade inválida' });
     }
 
-    const inserirChamado = db.prepare('INSERT INTO chamados (titulo, descricao, prioridade, status, criado_em) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)');
+    const inserirChamado = db.prepare('INSERT INTO chamados (titulo, descricao, prioridade, status, usuario_id, criado_em) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)');
 
-    inserirChamado.run(titulo.trim(), descricao.trim(), prioridade, 'Aberto');
+    inserirChamado.run(titulo.trim(), descricao.trim(), prioridade, 'Aberto', usuarioId);
 
     const resultado = db.prepare('SELECT * FROM chamados WHERE id = ?').get(db.prepare('SELECT last_insert_rowid() as id').get().id);
 
@@ -207,7 +216,7 @@ app.post('/usuarios', async (req, res) => {
 
     const senhaHash = await hashPassword(senha);
     
-    db.prepare('INSERT INTO usuarios (nome, username, email, senhaHash, criado_em) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)').run(nome, username, email, senhaHash);
+    db.prepare('INSERT INTO usuarios (nome, username, email, senha, criado_em) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)').run(nome, username, email, senhaHash);
 
     const resultado = db.prepare('SELECT * FROM usuarios WHERE id = ?').get(db.prepare('SELECT last_insert_rowid() as id').get().id);
     res.status(201).json(resultado);
@@ -228,14 +237,17 @@ app.post('/login', async (req, res) => {
         return res.status(401).json({ error: 'Credenciais inválidas' });
     }
 
+
     const senhaValida = await bcryptjs.compare(senha, usuario.senha);
 
     if(!senhaValida) {
         return res.status(401).json({ error: 'Credenciais inválidas' });
     }
 
-    const token = jsonwebtoken.sign({ id: usuario.id, username: usuario.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jsonwebtoken.sign({ id: usuario.id, username: usuario.username, role: usuario.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({ token });
+
+    
 
 
 });

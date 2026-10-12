@@ -34,17 +34,34 @@ db.exec(`
   )
 `);
 
+
 const colunasUsuarios = db.prepare("PRAGMA table_info(usuarios)").all();
 console.log(colunasUsuarios);
 
 const colunas = db.prepare("PRAGMA table_info(chamados)").all();
 const colunasEsperadas = ['id', 'titulo', 'descricao', 'prioridade', 'status', 'criado_em'];
 const temCriadoEm = colunas.some(colunas => colunas.name === 'criado_em');
+const temRole = colunasUsuarios.some(colunas => colunas.name === 'role');
+
+if(!temRole) {
+  db.exec('ALTER TABLE usuarios ADD COLUMN role TEXT DEFAULT "user"');
+  console.log('Coluna "role" adicionada à tabela "usuarios".');
+}
 
 if(!temCriadoEm) {
-  db.exec('ALTER TABLE chamados ADD COLUMN criado_em DATETIMEP');
+  db.exec('ALTER TABLE chamados ADD COLUMN criado_em DATETIME DEFAULT CURRENT_TIMESTAMP');
   console.log('Coluna "criado_em" adicionada à tabela "chamados".');
 };
+
+const temUsuarioId = db.prepare("PRAGMA table_info(chamados)").all().some(coluna => coluna.name === 'usuario_id');
+
+if(!temUsuarioId) {
+  db.exec('ALTER TABLE chamados ADD COLUMN usuario_id INTEGER');
+  console.log('Coluna "usuario_id" adicionada à tabela "chamados".');
+}
+
+
+
 
 console.log(colunas);
 

@@ -49,11 +49,20 @@ if(prioridade && !prioridadesPermitidas.includes(prioridade)) {
 }
 
 if(req.usuario.role === 'admin') {
-    listaChamados = db.prepare('SELECT * FROM chamados').all();
+
+    if(status && prioridade) listaChamados = db.prepare('SELECT * FROM chamados WHERE status = ? AND prioridade = ?').all(status, prioridade);
+
+    else if(status) listaChamados = db.prepare('SELECT * FROM chamados WHERE status = ?').all(status);
+
+    else if(prioridade) listaChamados = db.prepare('SELECT * FROM chamados WHERE prioridade = ?').all(prioridade);
+
+    else listaChamados = db.prepare('SELECT * FROM chamados').all();
+
 }
 
+
+
 else {
-    listaChamados = db.prepare('SELECT * FROM chamados WHERE usuario_id = ?').all(usuarioId);
 
     if(status && prioridade) listaChamados = db.prepare('SELECT * FROM chamados WHERE status = ? AND prioridade = ? AND usuario_id = ?').all(status, prioridade, usuarioId);
 
@@ -63,8 +72,13 @@ else {
 
     else listaChamados = db.prepare('SELECT * FROM chamados WHERE usuario_id = ?').all(usuarioId);
 
-    res.json(listaChamados);
+}
+
+res.json(listaChamados);
+
 });
+
+
 
 app.get('/chamados/:id', autenticarToken, (req, res) => { 
     const id = parseInt(req.params.id);

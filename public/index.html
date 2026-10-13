@@ -1,16 +1,14 @@
 <!doctype html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#ffffff">
 
-  <title>Help Desk - Chamados</title>
+  <title>Help Desk</title>
 
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/styles.css">
-
   <script src="/app.js" defer></script>
 </head>
 
@@ -20,37 +18,250 @@
     Pular para o conteúdo
   </a>
 
-  <div class="app-shell">
 
-    <!-- Cabeçalho -->
+  <!-- LOGIN / CADASTRO -->
+  <section id="auth-view" class="auth-view">
+
+    <div class="auth-card">
+
+      <div class="auth-brand">
+        Help Desk
+      </div>
+
+      <p class="auth-subtitle">
+        Entre para acessar seus chamados.
+      </p>
+
+
+      <div
+        class="auth-tabs"
+        role="tablist"
+        aria-label="Acesso"
+      >
+
+        <button
+          type="button"
+          class="auth-tab active"
+          id="show-login"
+        >
+          Entrar
+        </button>
+
+        <button
+          type="button"
+          class="auth-tab"
+          id="show-register"
+        >
+          Criar conta
+        </button>
+
+      </div>
+
+
+      <!-- LOGIN -->
+      <form
+        id="login-form"
+        class="auth-form"
+      >
+
+        <label>
+          Usuário
+
+          <input
+            name="username"
+            autocomplete="username"
+            required
+            placeholder="Seu username"
+          >
+        </label>
+
+
+        <label>
+          Senha
+
+          <input
+            name="senha"
+            type="password"
+            autocomplete="current-password"
+            required
+            placeholder="Sua senha"
+          >
+        </label>
+
+
+        <p
+          id="login-error"
+          class="error-box"
+          role="alert"
+          hidden
+        ></p>
+
+
+        <button
+          type="submit"
+          class="button primary full"
+        >
+          Entrar
+        </button>
+
+      </form>
+
+
+      <!-- CADASTRO -->
+      <form
+        id="register-form"
+        class="auth-form"
+        hidden
+      >
+
+        <label>
+          Nome
+
+          <input
+            name="nome"
+            autocomplete="name"
+            required
+            placeholder="Seu nome"
+          >
+        </label>
+
+
+        <label>
+          Username
+
+          <input
+            name="username"
+            autocomplete="username"
+            required
+            placeholder="Escolha um username"
+          >
+        </label>
+
+
+        <label>
+          E-mail
+
+          <input
+            name="email"
+            type="email"
+            autocomplete="email"
+            required
+            placeholder="voce@email.com"
+          >
+        </label>
+
+
+        <label>
+          Senha
+
+          <input
+            name="senha"
+            type="password"
+            autocomplete="new-password"
+            required
+            placeholder="Crie uma senha"
+          >
+        </label>
+
+
+        <p
+          id="register-error"
+          class="error-box"
+          role="alert"
+          hidden
+        ></p>
+
+
+        <button
+          type="submit"
+          class="button primary full"
+        >
+          Criar conta
+        </button>
+
+      </form>
+
+    </div>
+
+  </section>
+
+
+  <!-- APLICAÇÃO -->
+  <div
+    class="app-shell"
+    id="app-shell"
+    hidden
+  >
+
     <header class="topbar">
+
       <div class="header-inner">
 
-        <a class="brand" href="/">
+        <a
+          class="brand"
+          href="/"
+        >
           Help Desk
         </a>
 
-        <span class="connection" id="connection">
-          Conectando
-        </span>
+
+        <div class="header-actions">
+
+          <span
+            class="connection"
+            id="connection"
+          >
+            Conectando
+          </span>
+
+
+          <span class="user-chip">
+
+            <strong id="current-user">
+              —
+            </strong>
+
+            <span id="current-role">
+              Usuário
+            </span>
+
+          </span>
+
+
+          <button
+            type="button"
+            class="button secondary compact"
+            id="logout"
+          >
+            Sair
+          </button>
+
+        </div>
 
       </div>
+
     </header>
 
 
-    <!-- Conteúdo principal -->
     <main id="main">
 
-      <!-- Título da página -->
       <div class="page-heading">
 
         <div>
-          <h1>Chamados</h1>
 
-          <p class="subtitle">
-            Consulte e acompanhe as solicitações de atendimento.
+          <h1>
+            Chamados
+          </h1>
+
+          <p
+            class="subtitle"
+            id="page-subtitle"
+          >
+            Consulte e acompanhe suas solicitações de atendimento.
           </p>
+
         </div>
+
 
         <button
           type="button"
@@ -63,10 +274,10 @@
       </div>
 
 
-      <!-- Resumo -->
+      <!-- RESUMO -->
       <section
         class="stats"
-        aria-label="Resumo de todos os chamados"
+        aria-label="Resumo dos chamados"
       >
 
         <div class="stat">
@@ -92,7 +303,7 @@
       </section>
 
 
-      <!-- Lista de chamados -->
+      <!-- LISTA -->
       <section
         class="ticket-card"
         aria-labelledby="list-title"
@@ -101,6 +312,7 @@
         <div class="list-heading">
 
           <h2 id="list-title">
+
             Lista de chamados
 
             <span
@@ -109,13 +321,14 @@
             >
               0
             </span>
+
           </h2>
+
 
           <button
             type="button"
             class="button secondary compact"
             id="refresh"
-            aria-label="Atualizar chamados"
           >
             Atualizar
           </button>
@@ -123,10 +336,11 @@
         </div>
 
 
-        <!-- Filtros -->
+        <!-- FILTROS -->
         <div class="filters">
 
           <label class="search">
+
             Buscar
 
             <input
@@ -135,6 +349,7 @@
               placeholder="Título, descrição ou número"
               aria-label="Buscar chamados"
             >
+
           </label>
 
 
@@ -178,7 +393,6 @@
         </div>
 
 
-        <!-- Erro -->
         <div
           id="list-error"
           class="error-box"
@@ -187,17 +401,17 @@
         ></div>
 
 
-        <!-- Carregamento -->
         <div
           id="list-loading"
           class="empty-state"
           role="status"
         >
-          <h3>Carregando chamados...</h3>
+          <h3>
+            Carregando chamados...
+          </h3>
         </div>
 
 
-        <!-- Tabela -->
         <div
           class="table-wrap"
           id="table-wrap"
@@ -207,12 +421,14 @@
           <table>
 
             <thead>
+
               <tr>
                 <th>Chamado</th>
                 <th>Status</th>
                 <th>Prioridade</th>
                 <th>Criado em</th>
               </tr>
+
             </thead>
 
             <tbody id="ticket-list"></tbody>
@@ -222,7 +438,6 @@
         </div>
 
 
-        <!-- Estado vazio -->
         <div
           class="empty-state"
           id="empty-state"
@@ -262,10 +477,11 @@
       </section>
 
     </main>
+
   </div>
 
 
-  <!-- Modal: criar chamado -->
+  <!-- CRIAR CHAMADO -->
   <dialog
     id="create-dialog"
     class="modal"
@@ -298,6 +514,7 @@
     <form id="create-form">
 
       <label>
+
         Título
 
         <input
@@ -307,10 +524,12 @@
           placeholder="Ex.: Não consigo acessar minha conta"
           autocomplete="off"
         >
+
       </label>
 
 
       <label>
+
         Descrição
 
         <textarea
@@ -320,17 +539,30 @@
           maxlength="10000"
           placeholder="Descreva a situação e o que você precisa…"
         ></textarea>
+
       </label>
 
 
       <label>
+
         Prioridade
 
         <select name="prioridade">
-          <option>Baixa</option>
-          <option selected>Média</option>
-          <option>Alta</option>
+
+          <option>
+            Baixa
+          </option>
+
+          <option selected>
+            Média
+          </option>
+
+          <option>
+            Alta
+          </option>
+
         </select>
+
       </label>
 
 
@@ -371,7 +603,7 @@
   </dialog>
 
 
-  <!-- Modal: detalhes do chamado -->
+  <!-- DETALHES -->
   <dialog
     id="detail-dialog"
     class="detail-dialog"
@@ -391,7 +623,6 @@
         type="button"
         class="button secondary compact"
         data-close="detail-dialog"
-        aria-label="Fechar detalhes"
       >
         Fechar
       </button>
@@ -440,17 +671,28 @@
       </div>
 
 
-      <!-- Controles do chamado -->
       <div class="detail-controls">
 
         <label>
+
           Status do chamado
 
           <select id="detail-status">
-            <option>Aberto</option>
-            <option>Em andamento</option>
-            <option>Fechado</option>
+
+            <option>
+              Aberto
+            </option>
+
+            <option>
+              Em andamento
+            </option>
+
+            <option>
+              Fechado
+            </option>
+
           </select>
+
         </label>
 
 
@@ -467,7 +709,6 @@
           type="button"
           class="button danger-text"
           id="delete-ticket"
-          aria-label="Excluir chamado"
         >
           Excluir
         </button>
@@ -483,17 +724,17 @@
       ></p>
 
 
-      <!-- Descrição -->
       <section class="description-block">
 
-        <h3>Descrição</h3>
+        <h3>
+          Descrição
+        </h3>
 
         <p id="detail-description"></p>
 
       </section>
 
 
-      <!-- Conversa -->
       <section
         class="conversation"
         aria-labelledby="conversation-title"
@@ -502,6 +743,7 @@
         <div class="conversation-heading">
 
           <h3 id="conversation-title">
+
             Conversa
 
             <span
@@ -510,6 +752,7 @@
             >
               0
             </span>
+
           </h3>
 
           <span>
@@ -523,33 +766,30 @@
           id="messages"
           class="messages"
           role="log"
-          aria-label="Histórico de mensagens"
           aria-live="polite"
         ></div>
 
       </section>
 
 
-      <!-- Responder -->
       <form
         id="message-form"
         class="composer"
       >
 
-        <label>
-          Seu nome
+        <p class="composer-author">
 
-          <input
-            id="message-author"
-            name="autor"
-            required
-            maxlength="100"
-            autocomplete="name"
-          >
-        </label>
+          Respondendo como
+
+          <strong id="message-user">
+            —
+          </strong>
+
+        </p>
 
 
         <label>
+
           Sua resposta
 
           <textarea
@@ -560,6 +800,7 @@
             maxlength="10000"
             placeholder="Escreva sua mensagem"
           ></textarea>
+
         </label>
 
 
@@ -589,7 +830,7 @@
   </dialog>
 
 
-  <!-- Modal: excluir chamado -->
+  <!-- EXCLUIR -->
   <dialog
     id="delete-dialog"
     class="modal small"
@@ -599,6 +840,7 @@
     <h2 id="delete-title">
       Excluir este chamado?
     </h2>
+
 
     <p id="delete-description">
       Ele deixará de aparecer na central.
@@ -637,7 +879,6 @@
   </dialog>
 
 
-  <!-- Toast -->
   <div
     id="toast"
     class="toast"
@@ -646,5 +887,4 @@
   ></div>
 
 </body>
-
 </html>

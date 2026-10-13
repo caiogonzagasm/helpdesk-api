@@ -88,6 +88,10 @@ app.get('/chamados/:id', autenticarToken, (req, res) => {
         return res.status(404).json({ error: 'Chamado não encontrado' });
     }
 
+    if(req.usuario.role !== 'admin' && chamado.usuario_id !== req.usuario.id) {
+        return res.status(403).json({ error: 'Acesso negado' });
+    }
+
     res.json(chamado);
 });
 
@@ -97,6 +101,10 @@ app.patch('/chamados/:id', autenticarToken, (req, res) => {
 
     if(!chamado) {
         return res.status(404).json({ error: 'Chamado não encontrado' });
+    }
+
+    if(req.usuario.role !== 'admin' && chamado.usuario_id !== req.usuario.id) {
+        return res.status(403).json({ error: 'Acesso negado' });
     }
 
     const { status } = req.body;
@@ -159,6 +167,10 @@ app.delete('/chamados/:id', autenticarToken, (req, res) => {
         return res.status(404).json({ error: 'Chamado não encontrado' });
     }
 
+    if(req.usuario.role !== 'admin' && chamado.usuario_id !== req.usuario.id) {
+        return res.status(403).json({ error: 'Acesso negado' });
+    }
+
     db.exec('BEGIN');
     try {
         db.prepare('DELETE FROM mensagens WHERE chamado_id = ?').run(id);
@@ -180,10 +192,15 @@ app.post('/chamados/:id/mensagens', autenticarToken, (req, res) => {
         return res.status(404).json({ error: 'Chamado não encontrado' });
     }
 
-    const { autor, mensagem } = req.body;
+    if(req.usuario.role !== 'admin' && chamado.usuario_id !== req.usuario.id) {
+        return res.status(403).json({ error: 'Acesso negado' });
+    }
 
-    if(!autor || !mensagem) {
-        return res.status(400).json({ error: 'Autor e mensagem são obrigatórios' });
+    const { mensagem } = req.body;
+    const autor = req.usuario.username;
+
+    if(!mensagem) {
+        return res.status(400).json({ error: 'Mensagem é obrigatória' });
     }
 
     db.prepare('INSERT INTO mensagens (chamado_id, autor, mensagem, criado_em) VALUES (?, ?, ?, CURRENT_TIMESTAMP)').run(id, autor, mensagem);
@@ -199,6 +216,10 @@ app.get('/chamados/:id/mensagens', autenticarToken, (req, res) => {
 
     if(!chamado) {
         return res.status(404).json({ error: 'Chamado não encontrado' });
+    }
+
+    if(req.usuario.role !== 'admin' && chamado.usuario_id !== req.usuario.id) {
+        return res.status(403).json({ error: 'Acesso negado' });
     }
 
     const mensagens = db.prepare('SELECT * FROM mensagens WHERE chamado_id = ? ORDER BY criado_em ASC').all(id);

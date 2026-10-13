@@ -17,29 +17,24 @@ um histórico de mensagens dentro de cada atendimento.
 
 <img src="docs/images/image3.png" width="900" alt="Sistema de mensagens">
 
-## Funcionalidades
+### Help Desk API
 
-- Criação de chamados
-- Listagem de chamados
-- Busca por ID
-- Filtro por status
-- Filtro por prioridade
-- Alteração de status
-- Exclusão de chamados
-- Histórico de mensagens
-- Resposta dentro do chamado
-- Persistência com SQLite
-- Validações da API
-- Interface responsiva
-
-## Tecnologias
-
-- JavaScript
+### Tecnologias:
 - Node.js
 - Express
 - SQLite
-- HTML
-- CSS
+- JWT
+- bcryptjs
+
+### Funcionalidades:
+- Cadastro e login
+- Autenticação JWT
+- Roles user/admin
+- CRUD de chamados
+- Filtros por status e prioridade
+- Controle de acesso por usuário
+- Mensagens nos chamados
+- Autorização de administrador
 
 ## API
 
